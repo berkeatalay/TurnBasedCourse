@@ -7,11 +7,13 @@ public class MoveAction : MonoBehaviour
 {
     
     [SerializeField] private Animator unitAnimator;
+    [SerializeField] private int maxDistance = 4;
 
     private Vector3 _targetPosition;
-
+    private Unit _unit;
     private void Awake()
     {
+        _unit = GetComponent<Unit>();
         _targetPosition = transform.position;
     }
 
@@ -35,11 +37,38 @@ public class MoveAction : MonoBehaviour
 
         }
     }
-
-
-    public void Move(Vector3 targetPosition)
+    
+    public void Move(GridPosition targetGridPosition)
     {
-        _targetPosition = targetPosition;
+        _targetPosition = LevelGrid.Instance.GetWorldPosition(targetGridPosition);
+    }
+
+    public bool IsValidActionGridPosition(GridPosition gridPosition)
+    {
+        List<GridPosition> validGridPositions = GetValidActionPositions();
+        return validGridPositions.Contains(gridPosition);
+    }
+    public List<GridPosition> GetValidActionPositions()
+    {
+        List<GridPosition> validGridPositions = new List<GridPosition>();
+        GridPosition unitGridPosition = _unit.GetGridPosition();
+        for (int x = -maxDistance; x <= maxDistance; x++)
+        {
+            for (int z = -maxDistance; z <= maxDistance; z++)
+            {
+                GridPosition offsetGridPosition = new GridPosition(x, z);
+                GridPosition testGridPosition = unitGridPosition + offsetGridPosition;
+
+                if (!LevelGrid.Instance.IsValidGridPosition(testGridPosition)) continue;
+                if (unitGridPosition == testGridPosition) continue;
+                if (LevelGrid.Instance.HasAnyUnitOnGridPosition(testGridPosition)) continue;
+                
+                validGridPositions.Add(testGridPosition);
+
+            }
+        }
+
+            return validGridPositions;
     }
 }
  

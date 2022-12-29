@@ -40,6 +40,11 @@ public class Unit : MonoBehaviour
       return _moveAction;
    }
    
+   public GridPosition GetGridPosition()
+   {
+      return _currentGridPosition;
+   }
+   
    
 
 
