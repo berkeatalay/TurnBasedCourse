@@ -3,44 +3,48 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveAction : MonoBehaviour
+public class MoveAction : BaseAction
 {
     
     [SerializeField] private Animator unitAnimator;
     [SerializeField] private int maxDistance = 4;
 
     private Vector3 _targetPosition;
-    private Unit _unit;
-    private void Awake()
+    private static readonly int IsWalking = Animator.StringToHash("isWalking");
+    
+    protected override void Awake()
     {
-        _unit = GetComponent<Unit>();
+        base.Awake();
         _targetPosition = transform.position;
     }
 
     private void Update()
     {
+        if (!IsActive) return;
         const float stoppingDistance = .1f;         
 
         const float moveSpeed = 4f;
         const float rotateSpeed = 10f;
+        Vector3 moveDirection = (_targetPosition - transform.position).normalized;
 
         if (Vector3.Distance(transform.position, _targetPosition) > stoppingDistance)
         {      
-            unitAnimator.SetBool("isWalking",true);
-            Vector3 moveDirection = (_targetPosition - transform.position).normalized;
-            transform.forward = Vector3.Lerp(transform.forward,moveDirection,Time.deltaTime * rotateSpeed);
+            unitAnimator.SetBool(IsWalking,true);
             transform.position += moveDirection * (Time.deltaTime * moveSpeed);
         }
         else
         {
-            unitAnimator.SetBool("isWalking",false);
-
+            unitAnimator.SetBool(IsWalking,false);
+            IsActive = false;
         }
+        transform.forward = Vector3.Lerp(transform.forward,moveDirection,Time.deltaTime * rotateSpeed);
+
     }
     
     public void Move(GridPosition targetGridPosition)
     {
         _targetPosition = LevelGrid.Instance.GetWorldPosition(targetGridPosition);
+        IsActive = true;
     }
 
     public bool IsValidActionGridPosition(GridPosition gridPosition)
@@ -51,7 +55,7 @@ public class MoveAction : MonoBehaviour
     public List<GridPosition> GetValidActionPositions()
     {
         List<GridPosition> validGridPositions = new List<GridPosition>();
-        GridPosition unitGridPosition = _unit.GetGridPosition();
+        GridPosition unitGridPosition = Unit.GetGridPosition();
         for (int x = -maxDistance; x <= maxDistance; x++)
         {
             for (int z = -maxDistance; z <= maxDistance; z++)

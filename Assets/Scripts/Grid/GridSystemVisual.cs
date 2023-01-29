@@ -46,7 +46,7 @@ using UnityEngine;
 
         private void Update()
         {
-            updateGridPositionList();
+            UpdateGridVisual();
         }
 
         public void HideAllGridPosition()
@@ -65,7 +65,7 @@ using UnityEngine;
             }
         }
         
-        public void updateGridPositionList()
+        public void UpdateGridVisual()
         {
             HideAllGridPosition();
 
@@ -73,6 +73,6 @@ using UnityEngine;
             
             ShowGridPositionList(selectedUnit.GetMoveAction().GetValidActionPositions());
         }
-
+        
 
     }
