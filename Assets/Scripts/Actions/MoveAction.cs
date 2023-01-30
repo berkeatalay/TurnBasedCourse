@@ -36,13 +36,15 @@ public class MoveAction : BaseAction
         {
             unitAnimator.SetBool(IsWalking,false);
             IsActive = false;
+            OnActionComplete();
         }
         transform.forward = Vector3.Lerp(transform.forward,moveDirection,Time.deltaTime * rotateSpeed);
 
     }
     
-    public void Move(GridPosition targetGridPosition)
+    public void Move(GridPosition targetGridPosition, Action onActionComplete)
     {
+        OnActionComplete = onActionComplete;
         _targetPosition = LevelGrid.Instance.GetWorldPosition(targetGridPosition);
         IsActive = true;
     }
