@@ -69,9 +69,9 @@ using UnityEngine;
         {
             HideAllGridPosition();
 
-            Unit selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
+            BaseAction selectedAction = UnitActionSystem.Instance.GetSelectedAction();
             
-            ShowGridPositionList(selectedUnit.GetMoveAction().GetValidActionPositions());
+            ShowGridPositionList(selectedAction.GetValidActionPositions());
         }
         
 
