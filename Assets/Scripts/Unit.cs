@@ -10,13 +10,15 @@ public class Unit : MonoBehaviour
    private const int ActionPointMax = 2;
 
    public static event EventHandler OnAnyActionPointsChanged;
+
+   [SerializeField] private bool isEnemy;
    
    private GridPosition _currentGridPosition;
    private MoveAction _moveAction;
    private SpinAction _spinAction;
    private BaseAction[] _baseActionArray;
 
-   private int actionPoints = 2;
+   private int _actionPoints = 2;
 
    private void Awake()
    {
@@ -61,6 +63,11 @@ public class Unit : MonoBehaviour
    {
       return _currentGridPosition;
    }
+   
+   public bool IsEnemy()
+   {
+      return isEnemy;
+   }
 
    public BaseAction[] GetBaseActionArray()
    {
@@ -78,24 +85,30 @@ public class Unit : MonoBehaviour
 
    public bool CanSpendActionPointsToTakeAction(BaseAction baseAction)
    {
-      return (actionPoints >= baseAction.GetActionPointsCost());
+      return (_actionPoints >= baseAction.GetActionPointsCost());
    }
 
    private void SpendActionPoints(int amount)
    {
-      actionPoints -= amount;
+      _actionPoints -= amount;
       OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
    }
 
    public int GetActionPoints()
    {
-      return actionPoints;
+      return _actionPoints;
    }
 
    private void TurnSystem_OnTurnChanged(object sender, EventArgs e)
    {
-      actionPoints = ActionPointMax;
-      OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+      // ReSharper disable once InvertIf
+      if ((isEnemy && !TurnSystem.Instance.IsPlayerTurn()) || (!isEnemy && TurnSystem.Instance.IsPlayerTurn()))
+      {
+         _actionPoints = ActionPointMax;
+         OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+      }
+
+
 
    }
 

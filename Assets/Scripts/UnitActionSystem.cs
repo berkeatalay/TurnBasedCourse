@@ -43,6 +43,8 @@ public class UnitActionSystem : MonoBehaviour
         
         if (_isBusy) return;
 
+        if (!TurnSystem.Instance.IsPlayerTurn()) return;
+        
         if (EventSystem.current.IsPointerOverGameObject()) return;
         
         if (TryHandleUnitSelection())
@@ -68,6 +70,7 @@ public class UnitActionSystem : MonoBehaviour
         OnActionStart?.Invoke(this,EventArgs.Empty);
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     private bool TryHandleUnitSelection()
     {
         if (!Input.GetMouseButtonDown(0)) return false;
@@ -78,7 +81,7 @@ public class UnitActionSystem : MonoBehaviour
         if (!raycastHit.transform.TryGetComponent<Unit>(out Unit unit)) return false;
 
         if (unit == selectedUnit) return false; // unit is already selected
-        
+        if (unit.IsEnemy()) return false;
         SetSelectedUnit(unit);
         return true;
 
